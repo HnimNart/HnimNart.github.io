@@ -10,13 +10,8 @@ import Navbar from "./Navbar.js";
 import NotFound from './pages/NotFoundPage';
 
 
-
-const title = 'Samples';
-
-
 function App() {
 
-  const [listExpanded, setListExpanded] = useState<boolean>(false);
   return (
     <div>
       <Navbar />
