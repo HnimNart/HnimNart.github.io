@@ -7,6 +7,7 @@ import Navbar from "./Navbar.js";
 
 
 import NotFound from './pages/NotFoundPage';
+import Simulator from './pages/Simulator/Simulator.js';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <Navbar />
           <Routes>
             <Route path="/"  />
+            <Route path="/Simulator"  element={<Simulator/>}/>
             <Route path="*" element={<NotFound />} />
           </Routes>
       </Router>
