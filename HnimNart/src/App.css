@@ -28,6 +28,31 @@
   color: #61dafb;
 }
 
+.App-container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.App-panel {
+  position: relative;
+  left: 0px;
+  flex: 1;
+  max-width: 300px;
+  height: 100vh;
+  overflow: auto;
+  background: #fafafa;
+}
+
+.App-expand {
+  display: none;
+  float: right;
+  width: 36px;
+  height: 36px;
+  margin-top: -0.25em;
+  background-image: url(../public/menu.svg);
+  background-size: cover;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
