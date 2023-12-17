@@ -6,6 +6,7 @@ import Navbar from "./Navbar.js";
 
 import NotFound from './pages/NotFoundPage';
 import Simulator from './pages/Simulator/Simulator.js';
+import HomePage from './pages/HomePage.js';
 
 
 function App() {
@@ -13,12 +14,13 @@ function App() {
   return (
     <div>
       <Router>
-      <Navbar />
-          <Routes>
-            <Route path="/#"  />
-            <Route path="/Simulator"  element={<Simulator/>}/>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/Home" element={<HomePage />} />
+          <Route path="/Simulator" element={<Simulator />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </Router>
     </div>
   );
