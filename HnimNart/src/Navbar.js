@@ -5,7 +5,7 @@ import logo from './images/potato.jpeg' // relative path to image
 const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <a className="navbar-brand" href="#">
+      <a className="navbar-brand">
         <img src={logo} alt="Company Logo" width="50" height="50px" />
       </a>
       <div className="collapse navbar-collapse" id="navbarNavDropdown">
