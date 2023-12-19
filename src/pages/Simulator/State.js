@@ -1,8 +1,8 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useImmerReducer } from "use-immer";
 
 
-import init, { setup, simulate } from "simulator";
+import init, { setup, main } from "simulator";
 import { get_sigma_s, get_g, get_ior, get_sigma_a } from "simulator";
 import { set_sigma_s, set_g, set_ior, set_sigma_a } from "simulator";
 import { get_width, get_height, set_width, set_height } from "simulator";
@@ -177,10 +177,11 @@ function reducer(draft, action) {
 
 export default function MainComponent() {
     const [state, dispatch] = useImmerReducer(reducer, initialState);
+    const canvasRef = useRef(null);
+
     useEffect(() => {
         if (!state.ready) {
             init().then(() => {
-                setup();
                 dispatch({ type: 'scattering', value: get_sigma_s() });
                 dispatch({ type: 'absorption', value: get_sigma_a() });
                 dispatch({ type: 'asymmetry', value: get_g() });
@@ -193,9 +194,14 @@ export default function MainComponent() {
                 dispatch({ type: 'pixel_height', value: get_pixel_height() });
                 dispatch({ type: 'bmin', value: get_min_bounce() });
                 dispatch({ type: 'bmax', value: get_max_bounce() });
-            }).then(dispatch({ type: 'setReady' }))
+            }).then(dispatch({ type: 'setReady' })).catch((error) => {
+                if (!error.message.startsWith("Using exceptions for control flow,")) {
+                    throw error;
+                }
+            });
         }
     }, []);
+
 
     function FieldNumber(props) {
         return (
@@ -259,11 +265,14 @@ export default function MainComponent() {
                 variant='filled'
                 onChange={(e) => { dispatch({ type: 'changeOutFile', value: e.target.value }) }}
             />
-            {<Button
+            {state.ready && <Button
                 style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
-                onClick={() => { simulate(); }}>Simulate
+                onClick={() => {
+                    main();
+                }}>Simulate
             </Button>}
         </div>
+        <canvas id='canvas' ref={canvasRef} width={10} height={10} />
     </>
     );
 
