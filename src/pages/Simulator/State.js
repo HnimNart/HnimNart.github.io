@@ -120,7 +120,7 @@ export default function MainComponent() {
     }, [dispatch, ready]);
 
 
-    function FieldNumber(props) {
+    function FieldNumberInt(props) {
         return (
             < TextField
                 label={props.label}
@@ -129,33 +129,48 @@ export default function MainComponent() {
                 }
                 value={props.value}
                 variant="filled"
-                onChange={(e) => dispatch({ type: props.type, value: e.target.value })
+                onChange={(e) => dispatch({ type: 'int', key: props.type, value: e.target.value })
                 }
             />
         )
     }
+    function FieldNumberFloat(props) {
+        return (
+            < TextField
+                label={props.label}
+                type="number"
+                sx={{ m: 1, width: '25ch' }
+                }
+                value={props.value}
+                variant="filled"
+                onChange={(e) => dispatch({ type: 'float', key: props.type, value: e.target.value })
+                }
+            />
+        )
+    }
+
     return (<>
         <h3> Simulation Params </h3>
-        <FieldNumber label="Number of samples" value={state.n_samples} type='samples' />
-        <FieldNumber label="Number of samples pr frame" value={state.n_samples_pr_frame} type='samples_pr_frame' />
-        <FieldNumber label="Width" value={state.width} type='width' />
-        <FieldNumber label="Height" value={state.height} type='height' />
-        <FieldNumber label="Pixel Width" value={state.pixel_width} type='pixel_width' />
-        <FieldNumber label="Pixel Height" value={state.pixel_height} type='pixel_height' />
-        <FieldNumber label="Min Bounces" value={state.min_bounce} type='bmin' />
-        <FieldNumber label="Max Bounces" value={state.max_bounce} type='bmax' />
+        <FieldNumberInt label="Number of samples" value={state.n_samples} type='n_samples' />
+        <FieldNumberInt label="Number of samples pr frame" value={state.n_samples_pr_frame} type='n_samples_pr_frame' />
+        <FieldNumberInt label="Width" value={state.width} type='width' />
+        <FieldNumberInt label="Height" value={state.height} type='height' />
+        <FieldNumberFloat label="Pixel Width" value={state.pixel_width} type='pixel_width' />
+        <FieldNumberFloat label="Pixel Height" value={state.pixel_height} type='pixel_height' />
+        <FieldNumberInt label="Min Bounces" value={state.min_bounce} type='min_bounce' />
+        <FieldNumberInt label="Max Bounces" value={state.max_bounce} type='max_bounce' />
         <h3> Angles </h3>
 
-        <FieldNumber label="Theta_i" value={state.theta_i} type='theta_i' />
-        <FieldNumber label="Phi_i" value={state.phi_i} type='phi_i' />
-        <FieldNumber label="Theta_o" value={state.theta_o} type='theta_o' />
-        <FieldNumber label="Phi_o" value={state.phi_o} type='phi_o' />
+        <FieldNumberFloat label="Theta_i" value={state.theta_i} type='theta_i' />
+        <FieldNumberFloat label="Phi_i" value={state.phi_i} type='phi_i' />
+        <FieldNumberFloat label="Theta_o" value={state.theta_o} type='theta_o' />
+        <FieldNumberFloat label="Phi_o" value={state.phi_o} type='phi_o' />
 
         <h3> Optical Properties </h3>
-        <FieldNumber label="Scattering" value={state.sigma_s} type='sigma_s' />
-        <FieldNumber label="Absorption" value={state.sigma_a} type='sigma_a' />
-        <FieldNumber label="Asymmetry" value={state.g} type='g' />
-        <FieldNumber label="Index of Refraction" value={state.ior} type='ior' />
+        <FieldNumberFloat label="Scattering" value={state.sigma_s} type='sigma_s' />
+        <FieldNumberFloat label="Absorption" value={state.sigma_a} type='sigma_a' />
+        <FieldNumberFloat label="Asymmetry" value={state.g} type='g' />
+        <FieldNumberFloat label="Index of Refraction" value={state.ior} type='ior' />
         <h3> Misc </h3>
 
         <div>
