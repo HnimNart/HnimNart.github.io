@@ -1,31 +1,24 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useImmerReducer } from "use-immer";
 
 
-import init, { setup, main } from "simulator";
-import { get_sigma_s, get_g, get_ior, get_sigma_a } from "simulator";
-import { set_sigma_s, set_g, set_ior, set_sigma_a } from "simulator";
-import { get_width, get_height, set_width, set_height } from "simulator";
-import { get_n_samples_pr_frame, get_n_frames, set_n_samples_pr_frame, set_n_frames } from "simulator"
-import { get_pixel_width, get_pixel_height, set_pixel_width, set_pixel_height } from "simulator";
-import { get_min_bounce, get_max_bounce, set_min_bounce, set_max_bounce } from "simulator";
-import { set_wi, set_wo } from 'simulator';
+import init, { main, init_logger, init_storage } from "simulator";
+import { get_float_from_key, get_int_from_key, get_string_from_key } from "simulator";
+import { set_float_from_key, set_int_from_key, set_string_from_key } from "simulator";
 
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/base/Button';
 
 const initialState = {
-    ready: false,
-
     // Simualtion params
-    samples: 10,
-    samples_pr_frame: 1,
+    n_samples: 10,
+    n_samples_pr_frame: 1,
     width: 1,
     height: 1,
     pixel_width: 0.1,
     pixel_height: 0.1,
-    bmin: 1,
-    bmax: 1000,
+    min_bounce: 1,
+    max_bounce: 1000,
 
     // Light Direction
     theta_i: 0.0,
@@ -36,9 +29,9 @@ const initialState = {
     phi_o: 180.0,
 
     // Optical properties
-    scattering: 0.0,
-    absorption: 0.0,
-    asymmetry: 0.0,
+    sigma_s: 0.0,
+    sigma_a: 0.0,
+    g: 0.0,
     ior: 0.0,
 
     // Misc
@@ -53,154 +46,76 @@ const isValidDecimal = (value) => {
 
 function reducer(draft, action) {
     switch (action.type) {
-        case 'setReady': {
-            draft.ready = true;
-            break;
-        }
-        case 'changeFile': {
-            if (action.files) {
-                draft.file = action.files[0];
-            }
-            break;
-        }
-        case 'changeOutFile': {
-            draft.outfile = action.value;
-            break;
-        }
-        case 'samples': {
-            set_n_frames(action.value);
-            draft.samples = action.value;
-            break;
-        }
-        case 'samples_pr_frame': {
-            set_n_samples_pr_frame(action.value);
-            draft.samples_pr_frame = action.value;
-            break;
-        }
-        case 'width': {
-            set_width(action.value);
-            draft.width = action.value;
-            break;
-        }
-        case 'height': {
-            set_height(action.value);
-            draft.height = action.value;
-            break;
-        }
-        case 'pixel_width': {
-            set_pixel_width(action.value);
-            draft.pixel_width = action.value;
-            break;
-        }
-        case 'pixel_height': {
-            set_pixel_height(action.value);
-            draft.pixel_height = action.value;
-            break;
-        }
-        case 'bmin': {
-            set_min_bounce(action.value);
-            draft.bmin = action.value;
-            break;
-        }
-        case 'bmax': {
-            set_max_bounce(action.value);
-            draft.bmax = action.value;
-            break;
-        }
-        case 'scattering': {
+        case 'float':
             if (isValidDecimal(action.value)) {
-                set_sigma_s(action.value);
-                draft.scattering = action.value;
+                set_float_from_key(action.key, action.value);
             }
             break;
-        }
-        case 'absorption': {
-            if (isValidDecimal(action.value)) {
-                set_sigma_a(action.value);
-                draft.absorption = action.value;
-            }
+        case 'int':
+            set_int_from_key(action.key, action.value);
             break;
-        }
-        case 'ior': {
-            if (isValidDecimal(action.value)) {
-                set_ior(action.value);
-                draft.ior = action.value;
-            }
+        case 'string':
+            set_string_from_key(action.key, action.value);
             break;
-        }
-        case 'asymmetry': {
-            if (isValidDecimal(action.value)) {
-                set_g(action.value);
-                draft.g = action.value;
-            }
-            break;
-        }
-        case 'theta_i': {
-            if (isValidDecimal(action.value)) {
-                draft.theta_i = action.value;
-                set_wi(draft.phi_i, draft.theta_i);
-            }
-            break;
-        }
-        case 'phi_i': {
-            if (isValidDecimal(action.value)) {
-                draft.phi_i = action.value;
-                set_wi(draft.phi_i, draft.theta_i);
-            }
-            break;
-        }
-
-        case 'theta_o': {
-            if (isValidDecimal(action.value)) {
-                draft.theta_o = action.value;
-                set_wo(draft.phi_o, draft.theta_o);
-            }
-            break;
-        }
-        case 'phi_o': {
-            if (isValidDecimal(action.value)) {
-                draft.phi_o = action.value;
-                set_wo(draft.phi_o, draft.theta_o);
-            }
-            break;
-        }
-
         default: {
             console.log("Unknown Action", action.type);
         }
     }
+    eval('draft.' + action.key + '= ' + action.value);
     return draft;
 }
 
 
 
-
 export default function MainComponent() {
+    const [ready, setReady] = useState(false);
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const canvasRef = useRef(null);
 
+    function dispatch_value_from_name(name, type) {
+        var value;
+        switch (type) {
+            case 'float':
+                value = get_float_from_key(name);
+                break;
+            case 'int':
+                value = get_int_from_key(name);
+                break;
+            case 'string':
+                value = get_string_from_key(name);
+                break;
+            default:
+                console.log("Uknonwn type", type);
+        }
+        return dispatch({ type: type, key: name, value: value });
+    }
+
     useEffect(() => {
-        if (!state.ready) {
+
+        if (!ready) {
             init().then(() => {
-                dispatch({ type: 'scattering', value: get_sigma_s() });
-                dispatch({ type: 'absorption', value: get_sigma_a() });
-                dispatch({ type: 'asymmetry', value: get_g() });
-                dispatch({ type: 'ior', value: get_ior() });
-                dispatch({ type: 'samples', value: get_n_frames() });
-                dispatch({ type: 'samples_pr_frame', value: get_n_samples_pr_frame() });
-                dispatch({ type: 'width', value: get_width() });
-                dispatch({ type: 'height', value: get_height() });
-                dispatch({ type: 'pixel_width', value: get_pixel_width() });
-                dispatch({ type: 'pixel_height', value: get_pixel_height() });
-                dispatch({ type: 'bmin', value: get_min_bounce() });
-                dispatch({ type: 'bmax', value: get_max_bounce() });
-            }).then(dispatch({ type: 'setReady' })).catch((error) => {
+                init_logger();
+                init_storage();
+                dispatch_value_from_name('sigma_s', 'float');
+                dispatch_value_from_name('sigma_a', 'float');
+                dispatch_value_from_name('g', 'float');
+                dispatch_value_from_name('ior', 'float');
+                dispatch_value_from_name('pixel_width', 'float');
+                dispatch_value_from_name('pixel_height', 'float');
+
+                dispatch_value_from_name('n_samples', 'int');
+                dispatch_value_from_name('n_samples_pr_frame', 'int');
+                dispatch_value_from_name('width', 'int');
+                dispatch_value_from_name('height', 'int');
+                dispatch_value_from_name('min_bounce', 'int');
+                dispatch_value_from_name('max_bounce', 'int');
+            }).then(setReady(true)).catch((error) => {
                 if (!error.message.startsWith("Using exceptions for control flow,")) {
                     throw error;
                 }
             });
         }
-    }, []);
+    }, [dispatch, ready]);
 
 
     function FieldNumber(props) {
@@ -219,14 +134,14 @@ export default function MainComponent() {
     }
     return (<>
         <h3> Simulation Params </h3>
-        <FieldNumber label="Number of samples" value={state.samples} type='samples' />
-        <FieldNumber label="Number of samples pr frame" value={state.samples_pr_frame} type='samples_pr_frame' />
+        <FieldNumber label="Number of samples" value={state.n_samples} type='samples' />
+        <FieldNumber label="Number of samples pr frame" value={state.n_samples_pr_frame} type='samples_pr_frame' />
         <FieldNumber label="Width" value={state.width} type='width' />
         <FieldNumber label="Height" value={state.height} type='height' />
         <FieldNumber label="Pixel Width" value={state.pixel_width} type='pixel_width' />
         <FieldNumber label="Pixel Height" value={state.pixel_height} type='pixel_height' />
-        <FieldNumber label="Min Bounces" value={state.bmin} type='bmin' />
-        <FieldNumber label="Max Bounces" value={state.bmax} type='bmax' />
+        <FieldNumber label="Min Bounces" value={state.min_bounce} type='bmin' />
+        <FieldNumber label="Max Bounces" value={state.max_bounce} type='bmax' />
         <h3> Angles </h3>
 
         <FieldNumber label="Theta_i" value={state.theta_i} type='theta_i' />
@@ -235,9 +150,9 @@ export default function MainComponent() {
         <FieldNumber label="Phi_o" value={state.phi_o} type='phi_o' />
 
         <h3> Optical Properties </h3>
-        <FieldNumber label="Scattering" value={state.scattering} type='scattering' />
-        <FieldNumber label="Absorption" value={state.absorption} type='absorption' />
-        <FieldNumber label="Asymmetry" value={state.asymmetry} type='asymmetry' />
+        <FieldNumber label="Scattering" value={state.sigma_s} type='sigma_s' />
+        <FieldNumber label="Absorption" value={state.sigma_a} type='sigma_a' />
+        <FieldNumber label="Asymmetry" value={state.g} type='g' />
         <FieldNumber label="Index of Refraction" value={state.ior} type='ior' />
         <h3> Misc </h3>
 
@@ -265,7 +180,7 @@ export default function MainComponent() {
                 variant='filled'
                 onChange={(e) => { dispatch({ type: 'changeOutFile', value: e.target.value }) }}
             />
-            {state.ready && <Button
+            {ready && <Button
                 style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
                 onClick={() => {
                     main();
