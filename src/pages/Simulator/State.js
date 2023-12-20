@@ -1,6 +1,7 @@
+/* eslint no-eval: 0 */
+
 import { useEffect, useRef, useState } from "react"
 import { useImmerReducer } from "use-immer";
-
 
 import init, { main, init_logger, init_storage } from "simulator";
 import { get_float_from_key, get_int_from_key, get_string_from_key } from "simulator";
@@ -72,25 +73,26 @@ export default function MainComponent() {
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const canvasRef = useRef(null);
 
-    function dispatch_value_from_name(name, type) {
-        var value;
-        switch (type) {
-            case 'float':
-                value = get_float_from_key(name);
-                break;
-            case 'int':
-                value = get_int_from_key(name);
-                break;
-            case 'string':
-                value = get_string_from_key(name);
-                break;
-            default:
-                console.log("Uknonwn type", type);
-        }
-        return dispatch({ type: type, key: name, value: value });
-    }
+
 
     useEffect(() => {
+        function dispatch_value_from_name(name, type) {
+            var value;
+            switch (type) {
+                case 'float':
+                    value = get_float_from_key(name);
+                    break;
+                case 'int':
+                    value = get_int_from_key(name);
+                    break;
+                case 'string':
+                    value = get_string_from_key(name);
+                    break;
+                default:
+                    console.log("Uknonwn type", type);
+            }
+            return dispatch({ type: type, key: name, value: value });
+        }
 
         if (!ready) {
             init().then(() => {
