@@ -4,11 +4,24 @@ import { useEffect, useRef, useState } from "react"
 import { useImmerReducer } from "use-immer";
 
 import init, { main, init_logger, init_storage } from "simulator";
-import { get_float_from_key, get_int_from_key, get_string_from_key } from "simulator";
+import { get_layer_from_key_js, get_float_from_key, get_int_from_key, get_string_from_key } from "simulator";
 import { set_float_from_key, set_int_from_key, set_string_from_key } from "simulator";
+
+import LayersComponenet from "./Layer";
+import { FieldNumberFloat, FieldNumberInt } from "../../widgets/fields";
 
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/base/Button';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+
+
 
 const initialState = {
     // Simualtion params
@@ -28,12 +41,6 @@ const initialState = {
     // Collection Direction
     theta_o: 0.0,
     phi_o: 180.0,
-
-    // Optical properties
-    sigma_s: 0.0,
-    sigma_a: 0.0,
-    g: 0.0,
-    ior: 0.0,
 
     // Misc
     file: null,
@@ -68,12 +75,69 @@ function reducer(draft, action) {
 
 
 
+
 export default function MainComponent() {
     const [ready, setReady] = useState(false);
+    const [layers, setLayers] = useState([]);
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const canvasRef = useRef(null);
 
+    function AnglesComponenent() {
+        const [open, setOpen] = useState(true);
+        const handleClick = () => {
+            setOpen(!open);
+        };
+        return (
+            <Box sx={{ width: '100%' }}>
+                <ListItemButton onClick={handleClick}>
+                    <ListItemIcon>
+                        {open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemIcon>
+                    <ListItemText primary="Angles" />
+                </ListItemButton>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                        <Grid item xs={0}>
+                            <FieldNumberFloat label="Theta_i" value={state.theta_i} type='theta_i' dispatch={dispatch} />
+                            <FieldNumberFloat label="Phi_i" value={state.phi_i} type='phi_i' dispatch={dispatch} />
+                            <FieldNumberFloat label="Theta_o" value={state.theta_o} type='theta_o' dispatch={dispatch} />
+                            <FieldNumberFloat label="Phi_o" value={state.phi_o} type='phi_o' dispatch={dispatch} />
+                        </Grid>
+                    </Grid>
+                </Collapse>
+            </Box>
+        )
+    }
 
+    function SimParamsComponent() {
+        const [open, setOpen] = useState(true);
+        const handleClick = () => {
+            setOpen(!open);
+        };
+        return (
+            <Box sx={{ width: '100%' }}>
+                <ListItemButton onClick={handleClick}>
+                    <ListItemIcon>
+                        {open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemIcon>
+                    <ListItemText primary="Simulation Params" />
+                </ListItemButton>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                        <Grid item xs={0}>
+                            <FieldNumberInt label="Number of samples" value={state.n_samples} type='n_samples' dispatch={dispatch} />
+                            <FieldNumberInt label="Number of samples pr frame" value={state.n_samples_pr_frame} type='n_samples_pr_frame' dispatch={dispatch} />
+                            <FieldNumberInt label="Width" value={state.width} type='width' dispatch={dispatch} />
+                            <FieldNumberInt label="Height" value={state.height} type='height' dispatch={dispatch} />
+                            <FieldNumberFloat label="Pixel Width" value={state.pixel_width} type='pixel_width' dispatch={dispatch} />
+                            <FieldNumberFloat label="Pixel Height" value={state.pixel_height} type='pixel_height' dispatch={dispatch} />
+                            <FieldNumberInt label="Min Bounces" value={state.min_bounce} type='min_bounce' dispatch={dispatch} />
+                            <FieldNumberInt label="Max Bounces" value={state.max_bounce} type='max_bounce' dispatch={dispatch} />
+                        </Grid>
+                    </Grid>
+                </Collapse>
+            </Box >)
+    }
 
     useEffect(() => {
         function dispatch_value_from_name(name, type) {
@@ -89,7 +153,7 @@ export default function MainComponent() {
                     value = get_string_from_key(name);
                     break;
                 default:
-                    console.log("Uknonwn type", type);
+                    console.log("Unknown type", type);
             }
             return dispatch({ type: type, key: name, value: value });
         }
@@ -98,19 +162,15 @@ export default function MainComponent() {
             init().then(() => {
                 init_logger();
                 init_storage();
-                dispatch_value_from_name('sigma_s', 'float');
-                dispatch_value_from_name('sigma_a', 'float');
-                dispatch_value_from_name('g', 'float');
-                dispatch_value_from_name('ior', 'float');
                 dispatch_value_from_name('pixel_width', 'float');
                 dispatch_value_from_name('pixel_height', 'float');
-
                 dispatch_value_from_name('n_samples', 'int');
                 dispatch_value_from_name('n_samples_pr_frame', 'int');
                 dispatch_value_from_name('width', 'int');
                 dispatch_value_from_name('height', 'int');
                 dispatch_value_from_name('min_bounce', 'int');
                 dispatch_value_from_name('max_bounce', 'int');
+                setLayers([get_layer_from_key_js("0")]);
             }).then(setReady(true)).catch((error) => {
                 if (!error.message.startsWith("Using exceptions for control flow,")) {
                     throw error;
@@ -120,59 +180,12 @@ export default function MainComponent() {
     }, [dispatch, ready]);
 
 
-    function FieldNumberInt(props) {
-        return (
-            < TextField
-                label={props.label}
-                type="number"
-                sx={{ m: 1, width: '25ch' }
-                }
-                value={props.value}
-                variant="filled"
-                onChange={(e) => dispatch({ type: 'int', key: props.type, value: e.target.value })
-                }
-            />
-        )
-    }
-    function FieldNumberFloat(props) {
-        return (
-            < TextField
-                label={props.label}
-                type="number"
-                sx={{ m: 1, width: '25ch' }
-                }
-                value={props.value}
-                variant="filled"
-                onChange={(e) => dispatch({ type: 'float', key: props.type, value: e.target.value })
-                }
-            />
-        )
-    }
-
     return (<>
-        <h3> Simulation Params </h3>
-        <FieldNumberInt label="Number of samples" value={state.n_samples} type='n_samples' />
-        <FieldNumberInt label="Number of samples pr frame" value={state.n_samples_pr_frame} type='n_samples_pr_frame' />
-        <FieldNumberInt label="Width" value={state.width} type='width' />
-        <FieldNumberInt label="Height" value={state.height} type='height' />
-        <FieldNumberFloat label="Pixel Width" value={state.pixel_width} type='pixel_width' />
-        <FieldNumberFloat label="Pixel Height" value={state.pixel_height} type='pixel_height' />
-        <FieldNumberInt label="Min Bounces" value={state.min_bounce} type='min_bounce' />
-        <FieldNumberInt label="Max Bounces" value={state.max_bounce} type='max_bounce' />
-        <h3> Angles </h3>
+        <SimParamsComponent />
+        <AnglesComponenent />
+        <LayersComponenet layers={layers} setLayers={setLayers} />
 
-        <FieldNumberFloat label="Theta_i" value={state.theta_i} type='theta_i' />
-        <FieldNumberFloat label="Phi_i" value={state.phi_i} type='phi_i' />
-        <FieldNumberFloat label="Theta_o" value={state.theta_o} type='theta_o' />
-        <FieldNumberFloat label="Phi_o" value={state.phi_o} type='phi_o' />
-
-        <h3> Optical Properties </h3>
-        <FieldNumberFloat label="Scattering" value={state.sigma_s} type='sigma_s' />
-        <FieldNumberFloat label="Absorption" value={state.sigma_a} type='sigma_a' />
-        <FieldNumberFloat label="Asymmetry" value={state.g} type='g' />
-        <FieldNumberFloat label="Index of Refraction" value={state.ior} type='ior' />
         <h3> Misc </h3>
-
         <div>
             <input label='file' type="file"
                 onChange={(e) => dispatch({ type: 'changeFile', files: e.target.files })} />
