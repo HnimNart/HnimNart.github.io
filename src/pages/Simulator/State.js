@@ -170,6 +170,11 @@ export default function MainComponent() {
                 dispatch_value_from_name('height', 'int');
                 dispatch_value_from_name('min_bounce', 'int');
                 dispatch_value_from_name('max_bounce', 'int');
+
+                dispatch_value_from_name('theta_i', 'float');
+                dispatch_value_from_name('phi_i', 'float');
+                dispatch_value_from_name('theta_s', 'float');
+                dispatch_value_from_name('phi_s', 'float');
                 setLayers([get_layer_from_key_js("0")]);
             }).then(setReady(true)).catch((error) => {
                 if (!error.message.startsWith("Using exceptions for control flow,")) {
