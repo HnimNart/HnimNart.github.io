@@ -16,12 +16,8 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 
-import { add_layer, remove_layer, set_layer_from_key } from "simulator";
+import { upload_file, add_layer, remove_layer, set_layer_from_key } from "simulator";
 import { FieldNumberFloat2 } from "../../widgets/fields";
-
-
-
-
 
 export default function LayersComponenet({ layers, setLayers }) {
     const [open, setOpen] = useState(true);
@@ -44,6 +40,7 @@ export default function LayersComponenet({ layers, setLayers }) {
         const handleClick = () => {
             setOpen(!open);
         };
+        const phase_file_id = "phase_file_" + props.id.toString();
         return (
             <Box sx={{ width: '100%' }}>
                 <ListItemButton onClick={handleClick}>
@@ -81,6 +78,24 @@ export default function LayersComponenet({ layers, setLayers }) {
                             <FieldNumberFloat2 label="Refractive Index" value={props.item.ior}
                                 onChange={(e) => {
                                     props.item.ior = parseFloat(e.target.value);
+                                    update_layer(props.id, props.item);
+                                }} />
+                            {<>
+                                <input id={phase_file_id} type="file"
+                                    onClick={(e) => { upload_file(props.id.toString()) }} />
+                            </>
+                            }
+
+                        </Grid>
+                        <Grid item xs={3}>
+                            <FieldNumberFloat2 label="Mean Theta" value={props.item.mean_theta}
+                                onChange={(e) => {
+                                    props.item.mean_theta = parseFloat(e.target.value);
+                                    update_layer(props.id, props.item);
+                                }} />
+                            <FieldNumberFloat2 label="Roughness" value={props.item.roughness}
+                                onChange={(e) => {
+                                    props.item.roughness = parseFloat(e.target.value);
                                     update_layer(props.id, props.item);
                                 }} />
                         </Grid>

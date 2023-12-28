@@ -139,6 +139,56 @@ export default function MainComponent() {
             </Box >)
     }
 
+    function MiscComponent() {
+        const [open, setOpen] = useState(true);
+        const handleClick = () => {
+            setOpen(!open);
+        };
+        return (
+            <Box sx={{ width: '100%' }}>
+                <ListItemButton onClick={handleClick}>
+                    <ListItemIcon>
+                        {open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemIcon>
+                    <ListItemText primary="Miscellaneous" />
+                </ListItemButton>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <div>
+                        <input label='file' type="file"
+                            onChange={(e) => dispatch({ type: 'changeFile', files: e.target.files })} />
+                        {state.file && (
+                            <section>
+                                File details:
+                                <ul>
+                                    <li>Name: {state.file.name}</li>
+                                    <li>Type: {state.file.type}</li>
+                                    <li>Size: {state.file.size} bytes</li>
+                                </ul>
+                            </section>
+                        )}
+                    </div>
+
+                    <div className="input-text-wrapper" style={{ display: "flex", alignItems: "center" }} >
+                        <TextField
+                            label="Output file"
+                            id="filled-size-small"
+                            value={state.outfile}
+                            sx={{ m: 1, width: '25ch' }}
+                            variant='filled'
+                            onChange={(e) => { dispatch({ type: 'changeOutFile', value: e.target.value }) }}
+                        />
+                        {ready && <Button
+                            style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
+                            onClick={() => {
+                                main();
+                            }}>Simulate
+                        </Button>}
+
+                    </div>
+                </Collapse>
+            </Box >)
+    }
+
     useEffect(() => {
         function dispatch_value_from_name(name, type) {
             var value;
@@ -189,39 +239,7 @@ export default function MainComponent() {
         <SimParamsComponent />
         <AnglesComponenent />
         <LayersComponenet layers={layers} setLayers={setLayers} />
-
-        <h3> Misc </h3>
-        <div>
-            <input label='file' type="file"
-                onChange={(e) => dispatch({ type: 'changeFile', files: e.target.files })} />
-            {state.file && (
-                <section>
-                    File details:
-                    <ul>
-                        <li>Name: {state.file.name}</li>
-                        <li>Type: {state.file.type}</li>
-                        <li>Size: {state.file.size} bytes</li>
-                    </ul>
-                </section>
-            )}
-        </div>
-
-        <div className="input-text-wrapper" style={{ display: "flex", alignItems: "center" }} >
-            <TextField
-                label="Output file"
-                id="filled-size-small"
-                value={state.outfile}
-                sx={{ m: 1, width: '25ch' }}
-                variant='filled'
-                onChange={(e) => { dispatch({ type: 'changeOutFile', value: e.target.value }) }}
-            />
-            {ready && <Button
-                style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
-                onClick={() => {
-                    main();
-                }}>Simulate
-            </Button>}
-        </div>
+        <MiscComponent />
         <canvas id='canvas' ref={canvasRef} width={10} height={10} />
     </>
     );
