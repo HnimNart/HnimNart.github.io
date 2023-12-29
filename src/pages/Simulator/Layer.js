@@ -17,7 +17,7 @@ import Box from '@mui/material/Box';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 
 import { upload_phase_file, add_layer, remove_layer, set_layer_from_key } from "simulator";
-import { FieldNumberFloat2 } from "../../widgets/fields";
+import { FieldNumberFloat2, Item } from "../../widgets/fields";
 
 export default function LayersComponenet({ layers, setLayers }) {
     const [open, setOpen] = useState(true);
@@ -34,7 +34,7 @@ export default function LayersComponenet({ layers, setLayers }) {
         set_layer_from_key(id.toString(), JSON.stringify(new_item));
     }
 
-    const layerComponenet = ({name, id, item}) => {
+    const layerComponenet = ({ name, id, item }) => {
         const phase_file_id = "phase_file_" + id.toString();
         return (
             <Box sx={{ width: '100%' }}>
@@ -46,53 +46,96 @@ export default function LayersComponenet({ layers, setLayers }) {
                 </ListItemButton>
 
                 <Collapse in={open} timeout="auto" unmountOnExit>
-                    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                        <Grid item xs={2}>
-                            <FieldNumberFloat2 label="Thickness" value={item.thickness}
-                                onChange={(e) => {
-                                    item.thickness = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
-                        </Grid>
-                        <Grid item xs={2} label="XX">
-                            <FieldNumberFloat2 label="Scattering" value={item.sigma_s}
-                                onChange={(e) => {
-                                    item.sigma_s = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
-                            <FieldNumberFloat2 label="Absorption" value={item.sigma_a}
-                                onChange={(e) => {
-                                    item.sigma_a = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
-                            <FieldNumberFloat2 label="Asymmetry" value={item.g}
-                                onChange={(e) => {
-                                    item.g = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
-                            <FieldNumberFloat2 label="Refractive Index" value={item.ior}
-                                onChange={(e) => {
-                                    item.ior = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
-                            {<>
-                                <input id={phase_file_id} type="file"
-                                    onClick={(e) => { upload_phase_file(id.toString()) }} />
-                            </>
-                            }
+                    <Grid container spacing={1} >
 
+                        <Grid item xs={2}>
+                            <Box
+                                sx={{
+                                    p: 1,
+                                    borderRadius: 2,
+                                    bgcolor: 'background.default',
+                                    display: 'grid',
+                                    gridTemplateColumns: { md: '1fr' },
+                                    gap: 2,
+                                }}
+                            >
+                                <Item key="incident" elevation={2}>
+                                    {`Optical Properties`}
+                                </Item>
+                                <FieldNumberFloat2 label="Scattering" value={item.sigma_s}
+                                    onChange={(e) => {
+                                        item.sigma_s = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                                <FieldNumberFloat2 label="Absorption" value={item.sigma_a}
+                                    onChange={(e) => {
+                                        item.sigma_a = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                                <FieldNumberFloat2 label="Asymmetry" value={item.g}
+                                    onChange={(e) => {
+                                        item.g = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                                <FieldNumberFloat2 label="Refractive Index" value={item.ior}
+                                    onChange={(e) => {
+                                        item.ior = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                                {<>
+                                    <input id={phase_file_id} type="file"
+                                        onClick={(e) => { upload_phase_file(id.toString()) }} />
+                                </>
+                                }
+                            </Box>
+                        </Grid>
+
+                        <Grid item xs={2}>
+                            <Box
+                                sx={{
+                                    p: 1,
+                                    borderRadius: 2,
+                                    bgcolor: 'background.default',
+                                    display: 'grid',
+                                    gridTemplateColumns: { md: '1fr' },
+                                    gap: 2,
+                                }}
+                            >
+                                <Item key="incident" elevation={2}>
+                                    {`Surface Properties`}
+                                </Item>
+                                <FieldNumberFloat2 label="Mean Theta" value={item.mean_theta}
+                                    onChange={(e) => {
+                                        item.mean_theta = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                                <FieldNumberFloat2 label="Roughness" value={item.roughness}
+                                    onChange={(e) => {
+                                        item.roughness = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                            </Box>
                         </Grid>
                         <Grid item xs={2}>
-                            <FieldNumberFloat2 label="Mean Theta" value={item.mean_theta}
-                                onChange={(e) => {
-                                    item.mean_theta = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
-                            <FieldNumberFloat2 label="Roughness" value={item.roughness}
-                                onChange={(e) => {
-                                    item.roughness = parseFloat(e.target.value);
-                                    update_layer(id, item);
-                                }} />
+                            <Box
+                                sx={{
+                                    p: 1,
+                                    borderRadius: 2,
+                                    bgcolor: 'background.default',
+                                    display: 'grid',
+                                    gridTemplateColumns: { md: '1fr' },
+                                    gap: 2,
+                                }}
+                            >
+                                <Item key="incident" elevation={2}>
+                                    {`Geometry`}
+                                </Item>
+                                <FieldNumberFloat2 label="Thickness" value={item.thickness}
+                                    onChange={(e) => {
+                                        item.thickness = parseFloat(e.target.value);
+                                        update_layer(id, item);
+                                    }} />
+                            </Box>
                         </Grid>
                     </Grid>
                 </Collapse>
@@ -111,7 +154,7 @@ export default function LayersComponenet({ layers, setLayers }) {
         <Collapse in={open} timeout="auto" unmountOnExit>
             {layers.map(function (item, i) {
                 return (<ListItem key={i}>
-                    {layerComponenet({name: layerNames[i], id:i, item:item})}
+                    {layerComponenet({ name: layerNames[i], id: i, item: item })}
                     {/* <div>{layerNames[i]}<pre>{JSON.stringify(item, null, 2)}</pre></div> */}
                 </ListItem>)
             })

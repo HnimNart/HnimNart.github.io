@@ -7,7 +7,7 @@ import Collapse from '@mui/material/Collapse';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
-import { FieldNumberFloat } from "../../widgets/fields";
+import { Item, FieldNumberFloat } from "../../widgets/fields";
 
 import { upload_light_file } from "simulator";
 
@@ -21,12 +21,42 @@ export const lightComponenet = ({ state, dispatch, open, setOpen }) => {
                 <ListItemText primary="Light" />
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
-                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                    <Grid item xs={0}>
-                        <FieldNumberFloat label="light_pixel_width" value={state.light_pixel_width} type='light_pixel_width' dispatch={dispatch} />
-                        <FieldNumberFloat label="light_pixel_height" value={state.light_pixel_height} type='light_pixel_height' dispatch={dispatch} />
-                        <input id="light_file" type="file"
-                            onClick={(e) => { upload_light_file("light_file") }} />
+                <Grid container spacing={1} >
+                    <Grid item xs={2}>
+                        <Box
+                            sx={{
+                                p: 1,
+                                borderRadius: 2,
+                                bgcolor: 'background.default',
+                                display: 'grid',
+                                gridTemplateColumns: { md: '1fr' },
+                                gap: 2,
+                            }}
+                        >
+                            <Item key="incident" elevation={2}>
+                                {`Pixel size`}
+                            </Item>
+                            <FieldNumberFloat label="Pixel width" value={state.light_pixel_width} type='light_pixel_width' dispatch={dispatch} />
+                            <FieldNumberFloat label="Pixel height" value={state.light_pixel_height} type='light_pixel_height' dispatch={dispatch} />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Box
+                            sx={{
+                                p: 1,
+                                borderRadius: 2,
+                                bgcolor: 'background.default',
+                                display: 'grid',
+                                gridTemplateColumns: { md: '1fr' },
+                                gap: 2,
+                            }}
+                        >
+                            <Item key="incident" elevation={2}>
+                                {`Beam profile`}
+                            </Item>
+                            <input id="light_file" type="file"
+                                onClick={(e) => { upload_light_file("light_file") }} />
+                        </Box>
                     </Grid>
                 </Grid>
             </Collapse>

@@ -8,6 +8,8 @@ import Box from '@mui/material/Box';
 
 import TextField from '@mui/material/TextField';
 
+import { FieldNumberInt } from "../../widgets/fields";
+
 export function miscComponent({ state, dispatch, open, setOpen }) {
     return (
         <Box sx={{ width: '100%' }}>
@@ -18,21 +20,6 @@ export function miscComponent({ state, dispatch, open, setOpen }) {
                 <ListItemText primary="Miscellaneous" />
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
-                <div>
-                    <input label='file' type="file"
-                        onChange={(e) => dispatch({ type: 'changeFile', files: e.target.files })} />
-                    {state.file && (
-                        <section>
-                            File details:
-                            <ul>
-                                <li>Name: {state.file.name}</li>
-                                <li>Type: {state.file.type}</li>
-                                <li>Size: {state.file.size} bytes</li>
-                            </ul>
-                        </section>
-                    )}
-                </div>
-
                 <div className="input-text-wrapper" style={{ display: "flex", alignItems: "center" }} >
                     <TextField
                         label="Output file"
@@ -42,8 +29,6 @@ export function miscComponent({ state, dispatch, open, setOpen }) {
                         variant='filled'
                         onChange={(e) => { dispatch({ type: 'changeOutFile', value: e.target.value }) }}
                     />
-
-
                 </div>
             </Collapse>
         </Box >)
