@@ -1,7 +1,7 @@
-import { MainComponent } from "./State";
+import { ParamComponent } from "./State";
 export const Simulator = () => {
     return (
-        <MainComponent />
+        <ParamComponent />
     )
 }
 

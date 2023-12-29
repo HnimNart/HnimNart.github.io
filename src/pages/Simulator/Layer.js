@@ -16,7 +16,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 
-import { upload_file, add_layer, remove_layer, set_layer_from_key } from "simulator";
+import { upload_phase_file, add_layer, remove_layer, set_layer_from_key } from "simulator";
 import { FieldNumberFloat2 } from "../../widgets/fields";
 
 export default function LayersComponenet({ layers, setLayers }) {
@@ -77,7 +77,7 @@ export default function LayersComponenet({ layers, setLayers }) {
                                 }} />
                             {<>
                                 <input id={phase_file_id} type="file"
-                                    onClick={(e) => { upload_file(id.toString()) }} />
+                                    onClick={(e) => { upload_phase_file(id.toString()) }} />
                             </>
                             }
 

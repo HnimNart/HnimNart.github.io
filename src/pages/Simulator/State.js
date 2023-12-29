@@ -1,4 +1,5 @@
 /* eslint no-eval: 0 */
+import React from 'react';
 
 import { useEffect, useRef, useState } from "react"
 import { useImmerReducer } from "use-immer";
@@ -10,19 +11,12 @@ import { set_float_from_key, set_int_from_key, set_string_from_key } from "simul
 import LayersComponenet from "./Layer";
 import { FieldNumberFloat, FieldNumberInt } from "../../widgets/fields";
 
-import TextField from '@mui/material/TextField';
+import { simParamsComponent } from "./SimParams";
+import { lightComponenet } from "./Light";
+import { anglesComponenent } from "./Angle";
+import { miscComponent } from "./Misc";
+
 import { Button } from '@mui/base/Button';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import Collapse from '@mui/material/Collapse';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-
-
-
 const initialState = {
     // Simualtion params
     n_samples: 10,
@@ -41,6 +35,14 @@ const initialState = {
     // Collection Direction
     theta_o: 0.0,
     phi_o: 180.0,
+
+    light_width: 0,
+    light_height: 0,
+    light_pixel_width: 0,
+    light_pixel_height: 0,
+    light_total_flux: 0,
+    light_center_idx_i: 0,
+    light_center_idx_j: 0,
 
     // Misc
     file: null,
@@ -74,111 +76,16 @@ function reducer(draft, action) {
 }
 
 
-
-
-export default function MainComponent() {
+export default function ParamComponent() {
     const [ready, setReady] = useState(false);
     const [layers, setLayers] = useState([]);
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const canvasRef = useRef(null);
     const [simOpen, setSimOpen] = useState(true);
     const [angleOpen, setAngleOpen] = useState(true);
+    const [lightOpen, setLightOpen] = useState(true);
     const [miscOpen, setMiscOpen] = useState(true);
 
-    const anglesComponenent = ({ open, setOpen }) => {
-        return (
-            <Box sx={{ width: '100%' }}>
-                <ListItemButton onClick={() => setOpen(!open)}>
-                    <ListItemIcon>
-                        {angleOpen ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemIcon>
-                    <ListItemText primary="Angles" />
-                </ListItemButton>
-                <Collapse in={angleOpen} timeout="auto" unmountOnExit>
-                    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                        <Grid item xs={0}>
-                            <FieldNumberFloat label="Theta_i" value={state.theta_i} type='theta_i' dispatch={dispatch} />
-                            <FieldNumberFloat label="Phi_i" value={state.phi_i} type='phi_i' dispatch={dispatch} />
-                            <FieldNumberFloat label="Theta_o" value={state.theta_o} type='theta_o' dispatch={dispatch} />
-                            <FieldNumberFloat label="Phi_o" value={state.phi_o} type='phi_o' dispatch={dispatch} />
-                        </Grid>
-                    </Grid>
-                </Collapse>
-            </Box>
-        )
-    }
-
-    const simParamsComponent = ({ open, setOpen }) => {
-        return (
-            <Box sx={{ width: '100%' }}>
-                <ListItemButton onClick={() => setOpen(!open)}>
-                    <ListItemIcon>
-                        {simOpen ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemIcon>
-                    <ListItemText primary="Simulation Params" />
-                </ListItemButton>
-                <Collapse in={simOpen} timeout="auto" unmountOnExit>
-                    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                        <Grid item xs={0}>
-                            <FieldNumberInt label="Number of samples" value={state.n_samples} type='n_samples' dispatch={dispatch} />
-                            <FieldNumberInt label="Number of samples pr frame" value={state.n_samples_pr_frame} type='n_samples_pr_frame' dispatch={dispatch} />
-                            <FieldNumberInt label="Width" value={state.width} type='width' dispatch={dispatch} />
-                            <FieldNumberInt label="Height" value={state.height} type='height' dispatch={dispatch} />
-                            <FieldNumberFloat label="Pixel Width" value={state.pixel_width} type='pixel_width' dispatch={dispatch} />
-                            <FieldNumberFloat label="Pixel Height" value={state.pixel_height} type='pixel_height' dispatch={dispatch} />
-                            <FieldNumberInt label="Min Bounces" value={state.min_bounce} type='min_bounce' dispatch={dispatch} />
-                            <FieldNumberInt label="Max Bounces" value={state.max_bounce} type='max_bounce' dispatch={dispatch} />
-                        </Grid>
-                    </Grid>
-                </Collapse>
-            </Box >)
-    }
-
-    function miscComponent({ open, setOpen }) {
-        return (
-            <Box sx={{ width: '100%' }}>
-                <ListItemButton onClick={() => setOpen(!open)}>
-                    <ListItemIcon>
-                        {miscOpen ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemIcon>
-                    <ListItemText primary="Miscellaneous" />
-                </ListItemButton>
-                <Collapse in={miscOpen} timeout="auto" unmountOnExit>
-                    <div>
-                        <input label='file' type="file"
-                            onChange={(e) => dispatch({ type: 'changeFile', files: e.target.files })} />
-                        {state.file && (
-                            <section>
-                                File details:
-                                <ul>
-                                    <li>Name: {state.file.name}</li>
-                                    <li>Type: {state.file.type}</li>
-                                    <li>Size: {state.file.size} bytes</li>
-                                </ul>
-                            </section>
-                        )}
-                    </div>
-
-                    <div className="input-text-wrapper" style={{ display: "flex", alignItems: "center" }} >
-                        <TextField
-                            label="Output file"
-                            id="filled-size-small"
-                            value={state.outfile}
-                            sx={{ m: 1, width: '25ch' }}
-                            variant='filled'
-                            onChange={(e) => { dispatch({ type: 'changeOutFile', value: e.target.value }) }}
-                        />
-                        {ready && <Button
-                            style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
-                            onClick={() => {
-                                main();
-                            }}>Simulate
-                        </Button>}
-
-                    </div>
-                </Collapse>
-            </Box >)
-    }
 
     useEffect(() => {
         function dispatch_value_from_name(name, type) {
@@ -216,6 +123,15 @@ export default function MainComponent() {
                 dispatch_value_from_name('phi_i', 'float');
                 dispatch_value_from_name('theta_s', 'float');
                 dispatch_value_from_name('phi_s', 'float');
+
+                dispatch_value_from_name('light_pixel_width', 'float');
+                dispatch_value_from_name('light_pixel_height', 'float');
+                dispatch_value_from_name('light_total_flux', 'float');
+                dispatch_value_from_name('light_center_idx_i', 'int');
+                dispatch_value_from_name('light_center_idx_j', 'int');
+                dispatch_value_from_name('light_width', 'int');
+                dispatch_value_from_name('light_height', 'int');
+
                 setLayers([get_layer_from_key_js("0")]);
             }).then(setReady(true)).catch((error) => {
                 if (!error.message.startsWith("Using exceptions for control flow,")) {
@@ -226,14 +142,21 @@ export default function MainComponent() {
     }, [dispatch, ready]);
 
     return (<div>
-        {simParamsComponent({ open: simOpen, setOpen: setSimOpen })}
-        {anglesComponenent({open: angleOpen, setOpen: setAngleOpen})}
+        <canvas id='staging-canvas' ref={canvasRef} width={10} height={10} />
+        {simParamsComponent({ state: state, dispatch: dispatch, open: simOpen, setOpen: setSimOpen })}
+        {anglesComponenent({ state: state, dispatch: dispatch, open: angleOpen, setOpen: setAngleOpen })}
+        {lightComponenet({ state: state, dispatch: dispatch, open: lightOpen, setOpen: setLightOpen })}
         <LayersComponenet layers={layers} setLayers={setLayers} />
-        {miscComponent({open: miscOpen, setOpen: setMiscOpen})}
-        <canvas id='canvas' ref={canvasRef} width={10} height={10} /> 
+        {miscComponent({ state: state, dispatch: dispatch, open: miscOpen, setOpen: setMiscOpen })}
+        {ready && <Button
+            style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
+            onClick={() => {
+                main();
+            }}>Simulate
+        </Button>}
     </div>
     );
 
 }
 
-export { MainComponent }
+export { ParamComponent }
