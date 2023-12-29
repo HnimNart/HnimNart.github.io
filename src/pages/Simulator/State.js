@@ -9,7 +9,6 @@ import { get_layer_from_key_js, get_float_from_key, get_int_from_key, get_string
 import { set_float_from_key, set_int_from_key, set_string_from_key } from "simulator";
 
 import LayersComponenet from "./Layer";
-import { FieldNumberFloat, FieldNumberInt } from "../../widgets/fields";
 
 import { simParamsComponent } from "./SimParams";
 import { lightComponenet } from "./Light";

@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 
 import TextField from '@mui/material/TextField';
 
-import { FieldNumberInt } from "../../widgets/fields";
 
 export function miscComponent({ state, dispatch, open, setOpen }) {
     return (
