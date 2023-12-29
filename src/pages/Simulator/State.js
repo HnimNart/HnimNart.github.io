@@ -81,21 +81,20 @@ export default function MainComponent() {
     const [layers, setLayers] = useState([]);
     const [state, dispatch] = useImmerReducer(reducer, initialState);
     const canvasRef = useRef(null);
+    const [simOpen, setSimOpen] = useState(true);
+    const [angleOpen, setAngleOpen] = useState(true);
+    const [miscOpen, setMiscOpen] = useState(true);
 
-    function AnglesComponenent() {
-        const [open, setOpen] = useState(true);
-        const handleClick = () => {
-            setOpen(!open);
-        };
+    const anglesComponenent = ({ open, setOpen }) => {
         return (
             <Box sx={{ width: '100%' }}>
-                <ListItemButton onClick={handleClick}>
+                <ListItemButton onClick={() => setOpen(!open)}>
                     <ListItemIcon>
-                        {open ? <ExpandLess /> : <ExpandMore />}
+                        {angleOpen ? <ExpandLess /> : <ExpandMore />}
                     </ListItemIcon>
                     <ListItemText primary="Angles" />
                 </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
+                <Collapse in={angleOpen} timeout="auto" unmountOnExit>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                         <Grid item xs={0}>
                             <FieldNumberFloat label="Theta_i" value={state.theta_i} type='theta_i' dispatch={dispatch} />
@@ -109,20 +108,16 @@ export default function MainComponent() {
         )
     }
 
-    function SimParamsComponent() {
-        const [open, setOpen] = useState(true);
-        const handleClick = () => {
-            setOpen(!open);
-        };
+    const simParamsComponent = ({ open, setOpen }) => {
         return (
             <Box sx={{ width: '100%' }}>
-                <ListItemButton onClick={handleClick}>
+                <ListItemButton onClick={() => setOpen(!open)}>
                     <ListItemIcon>
-                        {open ? <ExpandLess /> : <ExpandMore />}
+                        {simOpen ? <ExpandLess /> : <ExpandMore />}
                     </ListItemIcon>
                     <ListItemText primary="Simulation Params" />
                 </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
+                <Collapse in={simOpen} timeout="auto" unmountOnExit>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                         <Grid item xs={0}>
                             <FieldNumberInt label="Number of samples" value={state.n_samples} type='n_samples' dispatch={dispatch} />
@@ -139,20 +134,16 @@ export default function MainComponent() {
             </Box >)
     }
 
-    function MiscComponent() {
-        const [open, setOpen] = useState(true);
-        const handleClick = () => {
-            setOpen(!open);
-        };
+    function miscComponent({ open, setOpen }) {
         return (
             <Box sx={{ width: '100%' }}>
-                <ListItemButton onClick={handleClick}>
+                <ListItemButton onClick={() => setOpen(!open)}>
                     <ListItemIcon>
-                        {open ? <ExpandLess /> : <ExpandMore />}
+                        {miscOpen ? <ExpandLess /> : <ExpandMore />}
                     </ListItemIcon>
                     <ListItemText primary="Miscellaneous" />
                 </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
+                <Collapse in={miscOpen} timeout="auto" unmountOnExit>
                     <div>
                         <input label='file' type="file"
                             onChange={(e) => dispatch({ type: 'changeFile', files: e.target.files })} />
@@ -234,14 +225,13 @@ export default function MainComponent() {
         }
     }, [dispatch, ready]);
 
-
-    return (<>
-        <SimParamsComponent />
-        <AnglesComponenent />
+    return (<div>
+        {simParamsComponent({ open: simOpen, setOpen: setSimOpen })}
+        {anglesComponenent({open: angleOpen, setOpen: setAngleOpen})}
         <LayersComponenet layers={layers} setLayers={setLayers} />
-        <MiscComponent />
-        <canvas id='canvas' ref={canvasRef} width={10} height={10} />
-    </>
+        {miscComponent({open: miscOpen, setOpen: setMiscOpen})}
+        <canvas id='canvas' ref={canvasRef} width={10} height={10} /> 
+    </div>
     );
 
 }

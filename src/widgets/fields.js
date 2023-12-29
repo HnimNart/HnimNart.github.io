@@ -5,8 +5,6 @@ export function FieldNumberInt(props) {
         < TextField
             label={props.label}
             type="number"
-            sx={{ m: 1, width: '25ch' }
-            }
             value={props.value}
             variant="filled"
             onChange={(e) => props.dispatch({ type: 'int', key: props.type, value: e.target.value })
@@ -19,8 +17,6 @@ export function FieldNumberFloat(props) {
         < TextField
             label={props.label}
             type="number"
-            sx={{ m: 1, width: '25ch' }
-            }
             value={props.value}
             variant="filled"
             onChange={(e) => props.dispatch({ type: 'float', key: props.type, value: e.target.value })
@@ -34,8 +30,6 @@ export function FieldNumberFloat2(props) {
         < TextField
             label={props.label}
             type="number"
-            sx={{ m: 1, width: '20ch' }
-            }
             value={props.value}
             variant="filled"
             onChange={props.onChange}

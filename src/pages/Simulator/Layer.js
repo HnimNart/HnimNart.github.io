@@ -34,69 +34,64 @@ export default function LayersComponenet({ layers, setLayers }) {
         set_layer_from_key(id.toString(), JSON.stringify(new_item));
     }
 
-    function LayerComponenet(props) {
-
-        const [open, setOpen] = useState(true);
-        const handleClick = () => {
-            setOpen(!open);
-        };
-        const phase_file_id = "phase_file_" + props.id.toString();
+    const layerComponenet = ({name, id, item}) => {
+        const phase_file_id = "phase_file_" + id.toString();
         return (
             <Box sx={{ width: '100%' }}>
                 <ListItemButton onClick={handleClick}>
                     <ListItemIcon>
                         {open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemIcon>
-                    <ListItemText primary={props.name} />
+                    <ListItemText primary={name} />
                 </ListItemButton>
 
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                        <Grid item xs={3}>
-                            <FieldNumberFloat2 label="Thickness" value={props.item.thickness}
+                        <Grid item xs={2}>
+                            <FieldNumberFloat2 label="Thickness" value={item.thickness}
                                 onChange={(e) => {
-                                    props.item.thickness = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.thickness = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
                         </Grid>
-                        <Grid item xs={3}>
-                            <FieldNumberFloat2 label="Scattering" value={props.item.sigma_s}
+                        <Grid item xs={2} label="XX">
+                            <FieldNumberFloat2 label="Scattering" value={item.sigma_s}
                                 onChange={(e) => {
-                                    props.item.sigma_s = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.sigma_s = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
-                            <FieldNumberFloat2 label="Absorption" value={props.item.sigma_a}
+                            <FieldNumberFloat2 label="Absorption" value={item.sigma_a}
                                 onChange={(e) => {
-                                    props.item.sigma_a = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.sigma_a = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
-                            <FieldNumberFloat2 label="Asymmetry" value={props.item.g}
+                            <FieldNumberFloat2 label="Asymmetry" value={item.g}
                                 onChange={(e) => {
-                                    props.item.g = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.g = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
-                            <FieldNumberFloat2 label="Refractive Index" value={props.item.ior}
+                            <FieldNumberFloat2 label="Refractive Index" value={item.ior}
                                 onChange={(e) => {
-                                    props.item.ior = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.ior = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
                             {<>
                                 <input id={phase_file_id} type="file"
-                                    onClick={(e) => { upload_file(props.id.toString()) }} />
+                                    onClick={(e) => { upload_file(id.toString()) }} />
                             </>
                             }
 
                         </Grid>
-                        <Grid item xs={3}>
-                            <FieldNumberFloat2 label="Mean Theta" value={props.item.mean_theta}
+                        <Grid item xs={2}>
+                            <FieldNumberFloat2 label="Mean Theta" value={item.mean_theta}
                                 onChange={(e) => {
-                                    props.item.mean_theta = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.mean_theta = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
-                            <FieldNumberFloat2 label="Roughness" value={props.item.roughness}
+                            <FieldNumberFloat2 label="Roughness" value={item.roughness}
                                 onChange={(e) => {
-                                    props.item.roughness = parseFloat(e.target.value);
-                                    update_layer(props.id, props.item);
+                                    item.roughness = parseFloat(e.target.value);
+                                    update_layer(id, item);
                                 }} />
                         </Grid>
                     </Grid>
@@ -116,14 +111,13 @@ export default function LayersComponenet({ layers, setLayers }) {
         <Collapse in={open} timeout="auto" unmountOnExit>
             {layers.map(function (item, i) {
                 return (<ListItem key={i}>
-                    <LayerComponenet name={layerNames[i]} id={i} item={item} />
+                    {layerComponenet({name: layerNames[i], id:i, item:item})}
                     {/* <div>{layerNames[i]}<pre>{JSON.stringify(item, null, 2)}</pre></div> */}
                 </ListItem>)
             })
             }
             <ButtonGroup variant="contained" aria-label="small button group">
                 <Button
-                    style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
                     onClick={() => {
                         setLayers(prev_layers => {
                             var name = "Layer " + layerCount;
@@ -136,7 +130,6 @@ export default function LayersComponenet({ layers, setLayers }) {
                     }}>Add Layer
                 </Button>
                 < Button
-                    style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
                     onClick={() => {
                         remove_layer((layerCount - 1).toString());
                         setLayers(
@@ -152,7 +145,6 @@ export default function LayersComponenet({ layers, setLayers }) {
                     }}>Delete Layer
                 </Button>
                 <Button
-                    style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
                     onClick={() => {
                         layers.map((item, i) => (
                             remove_layer(i.toString())
@@ -165,7 +157,6 @@ export default function LayersComponenet({ layers, setLayers }) {
                     }>Reset
                 </Button>
                 <Button
-                    style={{ maxWidth: '200px', maxHeight: '50px', minWidth: '200px', minHeight: '50px' }}
                     onClick={() => {
                         layers.map(function (item, i) {
                             console.log(i, item);
